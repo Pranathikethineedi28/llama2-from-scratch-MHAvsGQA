@@ -114,6 +114,8 @@ Some checkpoints from the run:
 
 The training loss decreased from **4.3485 to 0.7567** during the run.
 
+On held-out text, the final **validation loss was 1.9855**. The gap between training loss (0.76) and validation loss (1.99) shows the model overfits this small dataset, which is expected for a 3.8M-parameter model trained for 10,000 steps on Tiny Shakespeare. Adding dropout, early stopping on validation loss, or more data are natural next steps.
+
 Loss does not decrease monotonically because each step uses a randomly sampled batch.
 
 ## Sample Generation
