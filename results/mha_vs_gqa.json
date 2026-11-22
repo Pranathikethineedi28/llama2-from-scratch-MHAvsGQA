@@ -1,0 +1,164 @@
+{
+  "config": {
+    "steps": 1500,
+    "eval_every": 250,
+    "eval_batches": 20,
+    "batch_size": 16,
+    "seq_len": 128,
+    "gen_tokens": 256,
+    "seeds": [
+      0
+    ],
+    "device": "cpu",
+    "mlflow": false
+  },
+  "runs": [
+    {
+      "variant": "MHA",
+      "seed": 0,
+      "n_kv_heads": 8,
+      "params": 4229888,
+      "attention_params": 1048576,
+      "kv_cache_bytes_per_token": 8192,
+      "kv_cache_bytes_measured": 3137536,
+      "tokens_in_cache": 384,
+      "ms_per_train_step": 429.4071228673334,
+      "gen_tokens_per_s_cache": 407.20761357219436,
+      "gen_tokens_per_s_no_cache": 47.47337436883253,
+      "final_train_loss": 1.3791437149047852,
+      "final_val_loss": 1.5861287117004395,
+      "best_val_loss": 1.5861287117004395,
+      "best_val_step": 1500,
+      "curve": [
+        {
+          "step": 250,
+          "train_loss": 1.9368580460548401,
+          "val_loss": 2.014942741394043
+        },
+        {
+          "step": 500,
+          "train_loss": 1.667707359790802,
+          "val_loss": 1.799034482240677
+        },
+        {
+          "step": 750,
+          "train_loss": 1.5427716076374054,
+          "val_loss": 1.724125611782074
+        },
+        {
+          "step": 1000,
+          "train_loss": 1.475532454252243,
+          "val_loss": 1.6550925731658936
+        },
+        {
+          "step": 1250,
+          "train_loss": 1.4290441691875457,
+          "val_loss": 1.623796635866165
+        },
+        {
+          "step": 1500,
+          "train_loss": 1.3791437149047852,
+          "val_loss": 1.5861287117004395
+        }
+      ]
+    },
+    {
+      "variant": "GQA",
+      "seed": 0,
+      "n_kv_heads": 2,
+      "params": 3836672,
+      "attention_params": 655360,
+      "kv_cache_bytes_per_token": 2048,
+      "kv_cache_bytes_measured": 784384,
+      "tokens_in_cache": 384,
+      "ms_per_train_step": 339.38289127999997,
+      "gen_tokens_per_s_cache": 488.6470325310991,
+      "gen_tokens_per_s_no_cache": 55.194118011655995,
+      "final_train_loss": 1.3696546733379364,
+      "final_val_loss": 1.5772271752357483,
+      "best_val_loss": 1.5772271752357483,
+      "best_val_step": 1500,
+      "curve": [
+        {
+          "step": 250,
+          "train_loss": 1.9668317437171936,
+          "val_loss": 2.0270893692970278
+        },
+        {
+          "step": 500,
+          "train_loss": 1.6657890975475311,
+          "val_loss": 1.798381793498993
+        },
+        {
+          "step": 750,
+          "train_loss": 1.534046459197998,
+          "val_loss": 1.723216140270233
+        },
+        {
+          "step": 1000,
+          "train_loss": 1.4657411992549896,
+          "val_loss": 1.6440653443336486
+        },
+        {
+          "step": 1250,
+          "train_loss": 1.4143509030342103,
+          "val_loss": 1.6129787623882295
+        },
+        {
+          "step": 1500,
+          "train_loss": 1.3696546733379364,
+          "val_loss": 1.5772271752357483
+        }
+      ]
+    },
+    {
+      "variant": "MQA",
+      "seed": 0,
+      "n_kv_heads": 1,
+      "params": 3771136,
+      "attention_params": 589824,
+      "kv_cache_bytes_per_token": 1024,
+      "kv_cache_bytes_measured": 392192,
+      "tokens_in_cache": 384,
+      "ms_per_train_step": 329.56722100133356,
+      "gen_tokens_per_s_cache": 520.0662884616567,
+      "gen_tokens_per_s_no_cache": 50.59823026854955,
+      "final_train_loss": 1.376715987920761,
+      "final_val_loss": 1.5811115145683288,
+      "best_val_loss": 1.5811115145683288,
+      "best_val_step": 1500,
+      "curve": [
+        {
+          "step": 250,
+          "train_loss": 1.975615257024765,
+          "val_loss": 2.0324980318546295
+        },
+        {
+          "step": 500,
+          "train_loss": 1.6783584892749785,
+          "val_loss": 1.8039943397045135
+        },
+        {
+          "step": 750,
+          "train_loss": 1.5415134727954865,
+          "val_loss": 1.7262693166732788
+        },
+        {
+          "step": 1000,
+          "train_loss": 1.4686163544654847,
+          "val_loss": 1.646822875738144
+        },
+        {
+          "step": 1250,
+          "train_loss": 1.4232480823993683,
+          "val_loss": 1.6142209112644195
+        },
+        {
+          "step": 1500,
+          "train_loss": 1.376715987920761,
+          "val_loss": 1.5811115145683288
+        }
+      ]
+    }
+  ]
+}

@@ -157,15 +157,54 @@ The main architectural difference in this experiment is the number of key/value 
 
 I kept the model dimension, Transformer structure, dataset, and training pipeline the same so I could isolate the attention change.
 
+## Controlled Comparison: MHA vs GQA vs MQA
+
+The notebook implements both attention variants; `compare.py` now measures the difference. Only `n_kv_heads` changes between runs. The data, training batches (seeded), initialization seed, optimizer and number of steps are identical, and every variant is scored on the same fixed validation batches. The model code lives in `llama/model.py` and adds a **KV cache**, which is where GQA's savings show up during generation.
+
+Results from a CPU run (1,500 steps, 1 seed):
+
+| | MHA (8 KV heads) | GQA (2 KV heads) | MQA (1 KV head) |
+|---|---:|---:|---:|
+| Total parameters | 4,229,888 | 3,836,672 | 3,771,136 |
+| Attention parameters | 1,048,576 | 655,360 | 589,824 |
+| KV cache per token (fp32) | 8,192 bytes | 2,048 bytes | 1,024 bytes |
+| KV cache after a 128-token prompt + 256 generated tokens (measured) | 3,064 KB | 766 KB | 383 KB |
+| Training time per step | 429 ms | 339 ms | 330 ms |
+| Generation with KV cache | 407 tokens/s | 489 tokens/s | 520 tokens/s |
+| Generation without cache | 47 tokens/s | 55 tokens/s | 51 tokens/s |
+| Final validation loss | 1.5861 | 1.5772 | 1.5811 |
+
+![Training and validation loss for MHA, GQA and MQA](results/mha_vs_gqa.png)
+
+**What the results show**
+
+1. **GQA cuts the KV cache by exactly n_heads / n_kv_heads.** With 2 KV heads instead of 8, the cache is 4x smaller, both by formula and as measured after generation. The tests check this.
+2. **At this scale, quality is unchanged.** Validation losses differ by less than 0.01, which is within what a single seed can tell apart. Claiming one variant is better would need several seeds.
+3. **The KV cache matters more than the variant for speed.** Generating with the cache is about 8 to 10 times faster than recomputing attention over the whole sequence for every new token.
+4. **The savings become large at real model sizes.** For one 4,096-token sequence with LLaMA-2-7B dimensions (32 layers, head size 128, fp16), the KV cache is 2.00 GB with 32 KV heads, 0.50 GB with 8 (GQA) and 0.06 GB with 1 (MQA). That is calculated, not measured here, and it is why large models adopted GQA: it lets a GPU serve more sequences at once.
+
+**Overfitting check.** In this 1,500-step run, validation loss was still improving at the end, so these models are not yet overfitting. The original 10,000-step notebook run reached 0.76 training vs. 1.99 validation loss, so the overfitting appears somewhere between those points; `compare.py` records the step with the best validation loss to locate it.
+
+**Limits of this run:** one seed, CPU only, 1,500 steps. To strengthen the comparison:
+
+```
+python compare.py --steps 10000 --seeds 0 1 2 --device cuda --mlflow
+```
+
+### Run it
+
+```
+pip install -r requirements.txt
+python compare.py              # writes results/mha_vs_gqa.{md,json,png}
+pytest -q                      # 11 tests
+```
+
+The tests check that the causal mask hides future tokens, that generating with the KV cache gives the same outputs as a full forward pass, that GQA removes exactly the expected key/value parameters, and that the measured cache size matches the formula.
+
 ## Next Experiments
 
-I plan to extend the comparison with:
-
-- Validation loss
-- Parameter count
-- GPU memory usage
-- Inference time
-- MHA vs GQA generation comparison
+- Repeat the comparison with 3 seeds and 10,000 steps on a GPU, and report means and standard deviations
+- Add dropout or early stopping on validation loss to address the overfitting seen in the 10,000-step run
 - BPE/subword tokenization
 - Temperature and top-k sampling
 
